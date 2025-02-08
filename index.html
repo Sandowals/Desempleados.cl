@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import "./JobPlatform.css";
 
 export default function JobPlatform() {
   const [activeSection, setActiveSection] = useState("inicio");
@@ -27,8 +28,8 @@ export default function JobPlatform() {
   };
 
   return (
-    <div className="p-6">
-      <nav className="flex justify-between mb-4">
+    <div className="container">
+      <nav className="navbar">
         <Button onClick={() => setActiveSection("inicio")}>Inicio</Button>
         <Button onClick={() => setActiveSection("buscar")}>Buscar</Button>
         <Button onClick={() => setActiveSection("notificaciones")}>Notificaciones</Button>
@@ -36,61 +37,64 @@ export default function JobPlatform() {
         <Button onClick={() => setActiveSection("perfil")}>Perfil</Button>
       </nav>
 
-      {activeSection === "inicio" && <h1 className="text-2xl font-bold">Bienvenido a la Plataforma de Empleo</h1>}
-      {activeSection === "buscar" && (
-        <div>
-          <h1 className="text-2xl font-bold mb-4">Buscar Empleo</h1>
-          <Input
-            placeholder="Buscar empleo..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="mb-4"
-          />
-          <div className="grid gap-4">
-            {filteredJobs.length > 0 ? (
-              filteredJobs.map((job) => (
-                <Card key={job.id} className="p-4">
-                  <CardContent>
-                    <h2 className="text-xl font-semibold">{job.title}</h2>
-                    <p className="text-gray-600">{job.company} - {job.location}</p>
-                    <p className="mt-2">{job.description}</p>
-                    <Button className="mt-4" onClick={() => setSelectedJob(job)}>Ver Detalles</Button>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <p>No se encontraron empleos.</p>
-            )}
+      <div className="content">
+        {activeSection === "inicio" && <h1 className="title">Bienvenido a la Plataforma de Empleo</h1>}
+        {activeSection === "buscar" && (
+          <div>
+            <h1 className="title">Buscar Empleo</h1>
+            <Input
+              placeholder="Buscar empleo..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="input"
+            />
+            <div className="job-list">
+              {filteredJobs.length > 0 ? (
+                filteredJobs.map((job) => (
+                  <Card key={job.id} className="job-card">
+                    <CardContent>
+                      <h2 className="job-title">{job.title}</h2>
+                      <p className="job-details">{job.company} - {job.location}</p>
+                      <p className="job-description">{job.description}</p>
+                      <Button className="button" onClick={() => setSelectedJob(job)}>Ver Detalles</Button>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <p className="no-results">No se encontraron empleos.</p>
+              )}
+            </div>
           </div>
-        </div>
-      )}
-      {activeSection === "mensajes" && (
-        <div>
-          <h1 className="text-2xl font-bold">Mensajes</h1>
-          <div className="mt-2 h-40 overflow-y-auto border p-2">
-            {messages.map((msg, index) => (
-              <p key={index} className="p-2 border-b">{msg.sender}: {msg.text}</p>
-            ))}
+        )}
+        {activeSection === "mensajes" && (
+          <div>
+            <h1 className="title">Mensajes</h1>
+            <div className="message-box">
+              {messages.map((msg, index) => (
+                <p key={index} className="message">{msg.sender}: {msg.text}</p>
+              ))}
+            </div>
+            <Input
+              placeholder="Escribe un mensaje..."
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              className="input"
+            />
+            <Button className="button" onClick={sendMessage}>Enviar</Button>
           </div>
-          <Input
-            placeholder="Escribe un mensaje..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            className="mt-2"
-          />
-          <Button className="mt-2" onClick={sendMessage}>Enviar</Button>
-        </div>
-      )}
+        )}
+      </div>
+
       {selectedJob && (
         <Dialog open={true} onOpenChange={() => setSelectedJob(null)}>
           <DialogContent>
             <DialogHeader>
-              <h2 className="text-xl font-semibold">{selectedJob.title}</h2>
+              <h2 className="dialog-title">{selectedJob.title}</h2>
             </DialogHeader>
-            <p className="text-gray-600">{selectedJob.company} - {selectedJob.location}</p>
-            <p className="mt-2">{selectedJob.description}</p>
-            <p className="mt-4 font-semibold">Contacto: {selectedJob.contact}</p>
-            <Button className="mt-4" onClick={() => alert("Tu perfil ha sido enviado a la empresa")}>Postular</Button>
+            <p className="dialog-details">{selectedJob.company} - {selectedJob.location}</p>
+            <p className="dialog-description">{selectedJob.description}</p>
+            <p className="dialog-contact">Contacto: {selectedJob.contact}</p>
+            <Button className="button" onClick={() => alert("Tu perfil ha sido enviado a la empresa")}>Postular</Button>
           </DialogContent>
         </Dialog>
       )}
