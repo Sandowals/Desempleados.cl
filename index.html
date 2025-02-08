@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 
 export default function JobPlatform() {
+  const [activeSection, setActiveSection] = useState("inicio");
   const [search, setSearch] = useState("");
   const [selectedJob, setSelectedJob] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -28,30 +28,59 @@ export default function JobPlatform() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Plataforma de Empleo</h1>
-      <p className="mb-4 text-gray-600">Aquí las empresas te buscan a ti. Crea tu perfil y permite que te encuentren.</p>
-      <Input
-        placeholder="Buscar empleo..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4"
-      />
-      <div className="grid gap-4">
-        {filteredJobs.length > 0 ? (
-          filteredJobs.map((job) => (
-            <Card key={job.id} className="p-4">
-              <CardContent>
-                <h2 className="text-xl font-semibold">{job.title}</h2>
-                <p className="text-gray-600">{job.company} - {job.location}</p>
-                <p className="mt-2">{job.description}</p>
-                <Button className="mt-4" onClick={() => setSelectedJob(job)}>Ver Detalles</Button>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <p>No se encontraron empleos.</p>
-        )}
-      </div>
+      <nav className="flex justify-between mb-4">
+        <Button onClick={() => setActiveSection("inicio")}>Inicio</Button>
+        <Button onClick={() => setActiveSection("buscar")}>Buscar</Button>
+        <Button onClick={() => setActiveSection("notificaciones")}>Notificaciones</Button>
+        <Button onClick={() => setActiveSection("mensajes")}>Mensajes</Button>
+        <Button onClick={() => setActiveSection("perfil")}>Perfil</Button>
+      </nav>
+
+      {activeSection === "inicio" && <h1 className="text-2xl font-bold">Bienvenido a la Plataforma de Empleo</h1>}
+      {activeSection === "buscar" && (
+        <div>
+          <h1 className="text-2xl font-bold mb-4">Buscar Empleo</h1>
+          <Input
+            placeholder="Buscar empleo..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="mb-4"
+          />
+          <div className="grid gap-4">
+            {filteredJobs.length > 0 ? (
+              filteredJobs.map((job) => (
+                <Card key={job.id} className="p-4">
+                  <CardContent>
+                    <h2 className="text-xl font-semibold">{job.title}</h2>
+                    <p className="text-gray-600">{job.company} - {job.location}</p>
+                    <p className="mt-2">{job.description}</p>
+                    <Button className="mt-4" onClick={() => setSelectedJob(job)}>Ver Detalles</Button>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <p>No se encontraron empleos.</p>
+            )}
+          </div>
+        </div>
+      )}
+      {activeSection === "mensajes" && (
+        <div>
+          <h1 className="text-2xl font-bold">Mensajes</h1>
+          <div className="mt-2 h-40 overflow-y-auto border p-2">
+            {messages.map((msg, index) => (
+              <p key={index} className="p-2 border-b">{msg.sender}: {msg.text}</p>
+            ))}
+          </div>
+          <Input
+            placeholder="Escribe un mensaje..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            className="mt-2"
+          />
+          <Button className="mt-2" onClick={sendMessage}>Enviar</Button>
+        </div>
+      )}
       {selectedJob && (
         <Dialog open={true} onOpenChange={() => setSelectedJob(null)}>
           <DialogContent>
@@ -65,21 +94,6 @@ export default function JobPlatform() {
           </DialogContent>
         </Dialog>
       )}
-      <div className="mt-6 p-4 border rounded">
-        <h2 className="text-xl font-bold">Mensajes</h2>
-        <div className="mt-2 h-40 overflow-y-auto border p-2">
-          {messages.map((msg, index) => (
-            <p key={index} className="p-2 border-b">{msg.sender}: {msg.text}</p>
-          ))}
-        </div>
-        <Input
-          placeholder="Escribe un mensaje..."
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          className="mt-2"
-        />
-        <Button className="mt-2" onClick={sendMessage}>Enviar</Button>
-      </div>
     </div>
   );
 }
