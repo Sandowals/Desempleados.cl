@@ -1,0 +1,85 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Avatar } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+
+export default function JobPlatform() {
+  const [search, setSearch] = useState("");
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [jobs, setJobs] = useState([
+    { id: 1, title: "Ingeniero Comercial", company: "PVRental", location: "La Serena", description: "Planificación y análisis de datos para optimización de maquinaria pesada.", contact: "reclutamiento@pvrental.com" },
+    { id: 2, title: "Analista Financiero", company: "Banco Santander", location: "Santiago", description: "Gestión de riesgo y análisis financiero en el sector bancario.", contact: "empleos@santander.com" },
+  ]);
+
+  const filteredJobs = jobs.filter((job) =>
+    job.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const sendMessage = () => {
+    if (newMessage.trim() !== "") {
+      setMessages([...messages, { text: newMessage, sender: "Usuario" }]);
+      setNewMessage("");
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Plataforma de Empleo</h1>
+      <p className="mb-4 text-gray-600">Aquí las empresas te buscan a ti. Crea tu perfil y permite que te encuentren.</p>
+      <Input
+        placeholder="Buscar empleo..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="mb-4"
+      />
+      <div className="grid gap-4">
+        {filteredJobs.length > 0 ? (
+          filteredJobs.map((job) => (
+            <Card key={job.id} className="p-4">
+              <CardContent>
+                <h2 className="text-xl font-semibold">{job.title}</h2>
+                <p className="text-gray-600">{job.company} - {job.location}</p>
+                <p className="mt-2">{job.description}</p>
+                <Button className="mt-4" onClick={() => setSelectedJob(job)}>Ver Detalles</Button>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <p>No se encontraron empleos.</p>
+        )}
+      </div>
+      {selectedJob && (
+        <Dialog open={true} onOpenChange={() => setSelectedJob(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <h2 className="text-xl font-semibold">{selectedJob.title}</h2>
+            </DialogHeader>
+            <p className="text-gray-600">{selectedJob.company} - {selectedJob.location}</p>
+            <p className="mt-2">{selectedJob.description}</p>
+            <p className="mt-4 font-semibold">Contacto: {selectedJob.contact}</p>
+            <Button className="mt-4" onClick={() => alert("Tu perfil ha sido enviado a la empresa")}>Postular</Button>
+          </DialogContent>
+        </Dialog>
+      )}
+      <div className="mt-6 p-4 border rounded">
+        <h2 className="text-xl font-bold">Mensajes</h2>
+        <div className="mt-2 h-40 overflow-y-auto border p-2">
+          {messages.map((msg, index) => (
+            <p key={index} className="p-2 border-b">{msg.sender}: {msg.text}</p>
+          ))}
+        </div>
+        <Input
+          placeholder="Escribe un mensaje..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          className="mt-2"
+        />
+        <Button className="mt-2" onClick={sendMessage}>Enviar</Button>
+      </div>
+    </div>
+  );
+}
